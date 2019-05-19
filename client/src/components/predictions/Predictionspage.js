@@ -433,7 +433,7 @@ class Predictionspage extends Component {
               size="large"
               onClick={this.predictModel}
             >
-              Predict next 60 stock points movement{" "}
+              Predict next 20 stock points movement{" "}
               <Icon
                 type="stock"
                 style={{

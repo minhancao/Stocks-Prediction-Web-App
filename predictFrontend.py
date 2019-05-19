@@ -134,7 +134,9 @@ else:
 	inputs2 = new_data[len(train)-60:len(train)].values
 	trainInputs2 = new_data[len(train)-61:len(train)].values
 
-	for i in range(0,60):
+	predictVals = 20
+
+	for i in range(0,predictVals):
 		inputsNorm2 = inputs2.reshape(-1,1)
 		inputsNorm2 = scaler.transform(inputs2)
 
@@ -153,11 +155,13 @@ else:
 		trainInputs2 = trainInputs2[1:]
 		trainInputs2 = np.vstack([trainInputs2, nextDataToAdd])
 
-	new_data2 = pd.DataFrame(index=range(0,len(inputs2)),columns=['Date', 'Close'])
+	new_data2 = pd.DataFrame(index=range(0,predictVals+1),columns=['Date', 'Close'])
 	j = len(train)-1
-	for i in range(0,len(inputs2)):
+	new_data2['Date'][0] = data['Date'][j]
+	new_data2['Close'][0] = data['Close'][j]
+	for i in range(1,predictVals+1):
 		new_data2['Date'][i] = data['Date'][j] + timedelta(days=i+1)
-		new_data2['Close'][i] = inputs2[i,0]
+		new_data2['Close'][i] = inputs2[i+39,0]
 		
 
 	#setting index
