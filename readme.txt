@@ -13,7 +13,7 @@ Go to https://stocks-prediction-web-app-v1.herokuapp.com/ on your browser. Pleas
 Option 2 (Locally set it up on your computer to run):
 Setup: 
 Make sure you have NodeJS installed.
-Step 1: In terminal, go to AI_Financial_Analysis_App directory (project directory), enter the command "pip install -r requirements.txt" to install all the dependencies needed to run the Python code and scripts.
+Step 1: In terminal, go to project directory, enter the command "pip install -r requirements.txt" to install all the dependencies needed to run the Python code and scripts.
 Step 2: In the same directory, enter the command "npm install" to install all the NodeJS dependencies for the backend.
 Step 3: Enter "cd client" to go into the client folder, then enter the command "npm install" to install all dependencies for the React frontend.
 Step 4: Enter "cd .." to go back one directory back to the main project directory, then enter the command "npm run dev" to run both the frontend server and backend server. The web app should now launch on localhost:3000 on your browser.
@@ -31,7 +31,7 @@ Step 6: Navigate to "Prediction Model" and click on "News Articles Analysis for 
 How to run Python agent program:
 ========================================================================================
 Setup:
-Step 1: In terminal, go to AI_Financial_Analysis_App directory (project directory), enter the command "pip install -r requirements.txt" to install all the dependencies needed to run the Python code and scripts.
+Step 1: In terminal, go to project directory, enter the command "pip install -r requirements.txt" to install all the dependencies needed to run the Python code and scripts.
 
 Running:
 Step 1: In same directory, enter the command "python3 Prediction.py" to run the program.
