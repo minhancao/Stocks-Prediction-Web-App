@@ -66,6 +66,17 @@ const CollectionCreateForm = Form.create({ name: "form_in_modal" })(
                 ]
               })(<Input />)}
             </Form.Item>
+            <Form.Item label="To Date (YYYY-MM-DD) - No date inputted means grab all data points.">
+              {getFieldDecorator("stopper", {
+                rules: [
+                  {
+                    required: false,
+                    message:
+                      "Please input the date you want to get stock data to!"
+                  }
+                ]
+              })(<Input />)}
+            </Form.Item>
           </Form>
         </Modal>
       );
@@ -79,9 +90,10 @@ class Predictionspage extends Component {
       chartWidth: window.innerWidth
     });
     window.addEventListener("resize", this.updateDimensions.bind(this));
-    this.getStock("AAPL");
-    this.getStock("GOOG");
-    this.getStock("AMZN");
+    var date = "2017-01-02";
+    this.getStock("AAPL", date);
+    this.getStock("GOOG", date);
+    this.getStock("AMZN", date);
   }
   componentWillUnmount() {
     window.removeEventListener("resize", this.updateDimensions, false);
@@ -89,6 +101,7 @@ class Predictionspage extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      newsArticlesScores: {},
       lastTrained: {},
       stocksPrediction: {},
       predictionStrokeColors: {},
@@ -107,6 +120,7 @@ class Predictionspage extends Component {
       errorTrainingVisible: false,
       predictVisible: false,
       errorPredictVisible: false,
+      newsVisible: false,
       modelStatus: "Last Updated - ",
       predictStatus: ""
     }; //this is how you set up state
@@ -125,6 +139,10 @@ class Predictionspage extends Component {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
+  }
+
+  setNewsVisible(newsVisible) {
+    this.setState({ newsVisible });
   }
 
   setTrainVisible(trainVisible) {
@@ -148,7 +166,9 @@ class Predictionspage extends Component {
     this.setState({
       predictVisible,
       predictStatus:
-        "Prediction for " + this.state.predictSelect + " model done.",
+        "Prediction for " +
+        this.state.predictSelect +
+        " model done. Please view the Line Chart for the prediction line result. Please view the Statistics and pick dates that can be 20 days ahead to see the prediction values.",
       predictionLoaded: a
     });
   }
@@ -182,8 +202,12 @@ class Predictionspage extends Component {
         return;
       }
 
+      var date = "1800-03-02";
       console.log("Received values of form: ", values);
-      this.getStock(values["Stock Symbol"]);
+      if (values["stopper"]) {
+        date = values["stopper"];
+      }
+      this.getStock(values["Stock Symbol"], date);
       form.resetFields();
       this.setState({ visible: false });
     });
@@ -200,6 +224,35 @@ class Predictionspage extends Component {
         modelStatus:
           this.state.predictSelect + " Model Last Trained: " + split[0]
       });
+    });
+  };
+
+  newsArticlesAnalysis = () => {
+    this.setState({
+      newsStatus:
+        "Analyzing news articles for " +
+        this.state.predictSelect +
+        ", please wait, a modal will pop up when it is done..."
+    });
+    console.log(this.state.predictSelect);
+    axios.get("/agent/" + this.state.predictSelect).then(res => {
+      var sigh = [];
+      const hmm = JSON.parse(res.data);
+      console.log(hmm.includes("Error"));
+      if (hmm.includes("Error")) {
+        this.setErrorPredictVisible(true);
+      } else {
+        var temp = this.state.newsArticlesScores;
+        temp[this.state.predictSelect] = hmm;
+        this.setState({
+          newsArticlesScores: temp,
+          newsStatus:
+            "Analyzing news articles for " +
+            this.state.predictSelect +
+            " is done."
+        });
+        this.setNewsVisible(true);
+      }
     });
   };
 
@@ -295,8 +348,8 @@ class Predictionspage extends Component {
     });
   };
 
-  getStock = stockID => {
-    axios.get("/stocks/" + stockID).then(res => {
+  getStock = (stockID, date) => {
+    axios.get("/stocks/" + stockID + "/" + date).then(res => {
       var sigh = [];
       const hmm = JSON.parse(res.data);
       console.log(hmm.includes("Error"));
@@ -341,10 +394,13 @@ class Predictionspage extends Component {
     delete color[stockID];
     var stockInfo2 = this.state.stocksInfo;
     delete stockInfo2[stockID];
+    var temp = this.state.newsArticlesScores;
+    delete temp[stockID];
     this.setState({
       stocks: newStock,
       strokeColors: color,
-      stocksInfo: stockInfo2
+      stocksInfo: stockInfo2,
+      newsArticlesScores: temp
     });
   };
 
@@ -414,23 +470,6 @@ class Predictionspage extends Component {
               type="default"
               shape="round"
               size="large"
-              onClick={this.trainModel}
-            >
-              Update/Train Model{" "}
-              <Icon
-                type="edit"
-                style={{
-                  position: "relative",
-                  left: "4px",
-                  bottom: "3px",
-                  color: "red"
-                }}
-              />
-            </Button>
-            <Button
-              type="default"
-              shape="round"
-              size="large"
               onClick={this.predictModel}
             >
               Predict next 20 stock points movement{" "}
@@ -444,9 +483,40 @@ class Predictionspage extends Component {
                 }}
               />
             </Button>
+            <Button
+              type="default"
+              shape="round"
+              size="large"
+              onClick={this.newsArticlesAnalysis}
+            >
+              News Articles Analysis for Stock Movement{" "}
+              <Icon
+                type="file-search"
+                style={{
+                  position: "relative",
+                  left: "4px",
+                  bottom: "3px",
+                  color: "red"
+                }}
+              />
+            </Button>
             <div style={{ align: "left" }}>
               <p>Model Status: {this.state.modelStatus}</p>
               <p>Predict Status: {this.state.predictStatus}</p>
+              <p>
+                Interpreting News Articles Analysis Score: If the polarity is
+                above 3.0, there is a lot of positive feedback SO BUY. If
+                subjectivity is high (> 0.5), then that means the feedback is
+                mostly public opinion rather than factual information.
+              </p>
+              <p>News Analysis Status: {this.state.newsStatus}</p>
+              <p>News Articles Analysis Score:</p>
+              {Object.keys(this.state.newsArticlesScores).map(key => (
+                <div>
+                  {key}: Polarity Score: {this.state.newsArticlesScores[key][0]}
+                  , Subjectivity Score: {this.state.newsArticlesScores[key][1]}
+                </div>
+              ))}
             </div>
           </div>
         ); //pass method to child
@@ -532,6 +602,23 @@ class Predictionspage extends Component {
                 x="x"
                 y="Close"
               />
+              {this.state.predictionLoaded[this.state.predictSelect] ? (
+                <VictoryLine
+                  key={"predict" + this.state.predictSelect}
+                  style={{
+                    data: {
+                      stroke: this.state.predictionStrokeColors[
+                        this.state.predictSelect
+                      ]
+                    }
+                  }}
+                  data={this.state.stocksPrediction[this.state.predictSelect]}
+                  x="x"
+                  y="Predictions"
+                />
+              ) : (
+                <div />
+              )}
             </VictoryChart>
           </div>
         ); //pass method to child
@@ -598,6 +685,15 @@ class Predictionspage extends Component {
   render() {
     return (
       <div className="App">
+        <Modal
+          title="News Articles Analysis Done"
+          style={{}}
+          visible={this.state.newsVisible}
+          onOk={() => this.setNewsVisible(false)}
+          onCancel={() => this.setNewsVisible(false)}
+        >
+          <p>News Articles Analysis for {this.state.predictSelect} is done.</p>
+        </Modal>
         <Modal
           title="Training Done"
           style={{}}

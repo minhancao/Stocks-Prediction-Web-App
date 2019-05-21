@@ -8,6 +8,7 @@ import sys
 
 lines = sys.stdin.readlines()
 ticker = json.loads(lines[0])
+stopper = json.loads(lines[1])
 url = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={0}&outputsize=full&apikey=LBG3YII29JOX2SSU".format(
     ticker)
 response = requests.get(url)
@@ -23,7 +24,7 @@ else:
     for i in range(len(yListValues)):
         summaryDataList.append(
             {'x': xList[i], 'Open': float(yListValues[i]['1. open']), 'Close': float(yListValues[i]['4. close']), 'High': float(yListValues[i]['2. high']), 'Low': float(yListValues[i]['3. low']), 'Volume': float(yListValues[i]['5. volume'])})
-        if (xList[i] == "2017-03-20"):
+        if (xList[i] <= stopper):
             break
 
     #print("Grabbing data from alphavantage for %s" % (ticker))

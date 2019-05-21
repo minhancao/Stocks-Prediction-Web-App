@@ -13,6 +13,28 @@ app.use(
 );
 app.use(bodyParser.json());
 
+app.get("/agent/:id", (req, res) => {
+  var { PythonShell } = require("python-shell");
+  var pyshell = new PythonShell("predictionFrontend.py");
+
+  pyshell.send(JSON.stringify(req.params.id));
+
+  pyshell.on("message", function(message) {
+    // received a message sent from the Python script (a simple "print" statement)
+    const hmm = JSON.parse(message);
+    res.json(message);
+  });
+
+  // end the input stream and allow the process to exit
+  pyshell.end(function(err) {
+    if (err) {
+      throw err;
+    }
+
+    console.log("finished agent analyzing news articles data");
+  });
+});
+
 // Routes
 app.get("/logs/:id", (req, res) => {
   const fs = require("fs");
@@ -45,7 +67,7 @@ app.get("/train/:id", (req, res) => {
     res.json(message);
   });
 
-  // end the input stream and allow the process to exit
+  // end the input stream and allow the process to exiT
   pyshell.end(function(err) {
     if (err) {
       throw err;
@@ -100,11 +122,12 @@ app.get("/models/:id", (req, res) => {
   });
 });
 
-app.get("/stocks/:id", (req, res) => {
+app.get("/stocks/:id/:date", (req, res) => {
   var { PythonShell } = require("python-shell");
   var pyshell = new PythonShell("testScriptFormattedData.py");
 
   pyshell.send(JSON.stringify(req.params.id));
+  pyshell.send(JSON.stringify(req.params.date));
 
   pyshell.on("message", function(message) {
     // received a message sent from the Python script (a simple "print" statement)

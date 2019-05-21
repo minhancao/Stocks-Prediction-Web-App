@@ -64,6 +64,17 @@ const CollectionCreateForm = Form.create({ name: "form_in_modal" })(
                 ]
               })(<Input />)}
             </Form.Item>
+            <Form.Item label="To Date (YYYY-MM-DD) - No date inputted means grab all data points.">
+              {getFieldDecorator("stopper", {
+                rules: [
+                  {
+                    required: false,
+                    message:
+                      "Please input the date you want to get stock data to!"
+                  }
+                ]
+              })(<Input />)}
+            </Form.Item>
           </Form>
         </Modal>
       );
@@ -129,9 +140,12 @@ class Stockspage extends Component {
       if (err) {
         return;
       }
-
+      var date = "1800-03-02";
       console.log("Received values of form: ", values);
-      this.getStock(values["Stock Symbol"]);
+      if (values["stopper"]) {
+        date = values["stopper"];
+      }
+      this.getStock(values["Stock Symbol"], date);
       form.resetFields();
       this.setState({ visible: false });
     });
@@ -141,8 +155,8 @@ class Stockspage extends Component {
     this.formRef = formRef;
   };
 
-  getStock = stockID => {
-    axios.get("/stocks/" + stockID).then(res => {
+  getStock = (stockID, date) => {
+    axios.get("/stocks/" + stockID + "/" + date).then(res => {
       var sigh = [];
       const hmm = JSON.parse(res.data);
       console.log(hmm.includes("Error"));
