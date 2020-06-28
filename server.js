@@ -8,7 +8,11 @@ const app = express();
 // Bodyparser middleware
 app.use(
   bodyParser.urlencoded({
+<<<<<<< HEAD
     extended: false,
+=======
+    extended: false
+>>>>>>> 77ecb80fef4db1d88d5eee6939d7bf9c79a877cf
   })
 );
 app.use(bodyParser.json());
@@ -19,14 +23,22 @@ app.get("/agent/:id", (req, res) => {
 
   pyshell.send(JSON.stringify(req.params.id));
 
+<<<<<<< HEAD
   pyshell.on("message", function (message) {
+=======
+  pyshell.on("message", function(message) {
+>>>>>>> 77ecb80fef4db1d88d5eee6939d7bf9c79a877cf
     // received a message sent from the Python script (a simple "print" statement)
     const hmm = JSON.parse(message);
     res.json(message);
   });
 
   // end the input stream and allow the process to exit
+<<<<<<< HEAD
   pyshell.end(function (err) {
+=======
+  pyshell.end(function(err) {
+>>>>>>> 77ecb80fef4db1d88d5eee6939d7bf9c79a877cf
     if (err) {
       throw err;
     }

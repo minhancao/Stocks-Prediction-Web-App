@@ -1,4 +1,4 @@
-GitHub Repository Link: https://github.com/minhancao/Stocks-Web-App
+GitHub Repository Link: https://github.com/minhancao/Stocks-Prediction-Web-App
 Deployed on Heroku: https://stocks-prediction-web-app-v1.herokuapp.com/
 
 ========================================================================================
