@@ -6,7 +6,9 @@ textblob==0.15.3
 pandas==0.24.1
 matplotlib==3.0.3
 beautifulsoup4==4.7.1
-scikit_learn==0.21.1
-tensorboard==1.13.1
-tensorflow==1.13.1
+scikit_learn==0.22
+tensorboard==2.2.2
+tensorboard-plugin-wit==1.6.0.post3
+tensorflow==2.2.0
 tensorflow-estimator==1.13.0
+tensorflow-gpu-estimator==2.2.0
