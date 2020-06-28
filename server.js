@@ -8,7 +8,7 @@ const app = express();
 // Bodyparser middleware
 app.use(
   bodyParser.urlencoded({
-    extended: false
+    extended: false,
   })
 );
 app.use(bodyParser.json());
@@ -19,14 +19,14 @@ app.get("/agent/:id", (req, res) => {
 
   pyshell.send(JSON.stringify(req.params.id));
 
-  pyshell.on("message", function(message) {
+  pyshell.on("message", function (message) {
     // received a message sent from the Python script (a simple "print" statement)
     const hmm = JSON.parse(message);
     res.json(message);
   });
 
   // end the input stream and allow the process to exit
-  pyshell.end(function(err) {
+  pyshell.end(function (err) {
     if (err) {
       throw err;
     }
@@ -61,14 +61,14 @@ app.get("/train/:id", (req, res) => {
 
   pyshell.send(JSON.stringify(req.params.id));
 
-  pyshell.on("message", function(message) {
+  pyshell.on("message", function (message) {
     // received a message sent from the Python script (a simple "print" statement)
     const hmm = JSON.parse(message);
     res.json(message);
   });
 
   // end the input stream and allow the process to exiT
-  pyshell.end(function(err) {
+  pyshell.end(function (err) {
     if (err) {
       throw err;
     }
@@ -83,14 +83,15 @@ app.get("/predict/:id", (req, res) => {
 
   pyshell.send(JSON.stringify(req.params.id));
 
-  pyshell.on("message", function(message) {
+  pyshell.on("message", function (message) {
     // received a message sent from the Python script (a simple "print" statement)
-    const hmm = JSON.parse(message);
+    var lastInd = message.lastIndexOf("\n") + 1;
+    message = message.substring(lastInd);
     res.json(message);
   });
 
   // end the input stream and allow the process to exit
-  pyshell.end(function(err) {
+  pyshell.end(function (err) {
     if (err) {
       throw err;
     }
@@ -106,14 +107,14 @@ app.get("/models/:id", (req, res) => {
 
   pyshell.send(JSON.stringify(req.params.id));
 
-  pyshell.on("message", function(message) {
+  pyshell.on("message", function (message) {
     // received a message sent from the Python script (a simple "print" statement)
     const hmm = JSON.parse(message);
     res.json(message);
   });
 
   // end the input stream and allow the process to exit
-  pyshell.end(function(err) {
+  pyshell.end(function (err) {
     if (err) {
       throw err;
     }
@@ -129,14 +130,14 @@ app.get("/stocks/:id/:date", (req, res) => {
   pyshell.send(JSON.stringify(req.params.id));
   pyshell.send(JSON.stringify(req.params.date));
 
-  pyshell.on("message", function(message) {
+  pyshell.on("message", function (message) {
     // received a message sent from the Python script (a simple "print" statement)
     const hmm = JSON.parse(message);
     res.json(message);
   });
 
   // end the input stream and allow the process to exit
-  pyshell.end(function(err) {
+  pyshell.end(function (err) {
     if (err) {
       throw err;
     }
@@ -153,14 +154,14 @@ app.get("/stockinfo/:id/:date", (req, res) => {
   pyshell.send(JSON.stringify(req.params.id));
   pyshell.send(JSON.stringify(req.params.date));
 
-  pyshell.on("message", function(message) {
+  pyshell.on("message", function (message) {
     // received a message sent from the Python script (a simple "print" statement)
     const hmm = JSON.parse(message);
     res.json(message);
   });
 
   // end the input stream and allow the process to exit
-  pyshell.end(function(err) {
+  pyshell.end(function (err) {
     if (err) {
       throw err;
     }
