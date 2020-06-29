@@ -85,8 +85,6 @@ app.get("/predict/:id", (req, res) => {
 
   pyshell.on("message", function (message) {
     // received a message sent from the Python script (a simple "print" statement)
-    var lastInd = message.lastIndexOf("\n") + 1;
-    message = message.substring(lastInd);
     res.json(message);
   });
 

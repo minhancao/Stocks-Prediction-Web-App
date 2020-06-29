@@ -9,8 +9,8 @@ import requests
 from datetime import timedelta
 #importing required libraries
 from sklearn.preprocessing import MinMaxScaler
-from tensorflow.keras.models import Sequential, model_from_json, load_model
-from tensorflow.keras.layers import Dense, Dropout, LSTM 
+from keras.models import Sequential, model_from_json, load_model
+from keras.layers import Dense, Dropout, LSTM 
 
 #for normalizing data
 from sklearn.preprocessing import MinMaxScaler
